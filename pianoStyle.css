@@ -1,0 +1,33 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+.centerAlign {
+    text-align: center;
+}
+
+.leftPianoCol {
+    width: 100%;
+    height: 300px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+.midPianoCol {
+    width: 100%;
+    height: 300px;
+    border: 1px solid black; 
+    text-align: center;
+}
+
+.rightPianoCol {
+    width: 100%;
+    height: 300px;
+    border: 1px solid black;
+    text-align: center;    
+}
+
+#correctResponse {
+    
+}
