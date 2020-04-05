@@ -31,3 +31,75 @@
 #correctResponse {
     
 }
+/* ==================== */
+/*    KEYBOARD STYLES   */
+/* ==================== */
+
+#keyboard{
+    width: 80vw;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.keyboard__key{
+    height: 250px;
+    width: calc(100%/9);
+    max-width: 50px;
+    border: solid 1px #aaa;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    border-radius: 0px 0px 4px 4px;
+    box-shadow: 0px 5px 1px rgba(32,32,32,0.2);
+}
+
+.white__key{
+    background: white;
+}
+
+.black__key{
+    background: black;
+}
+
+.keyboard__key.pressed {
+    background: #f8f8ff;
+    box-shadow: none;
+    transform: translateY(4px);a
+}
+
+.key__instruction{
+    font-weight: 500;
+    border: solid 2px #bbb;
+    border-radius: 4px;
+    background: #eee;
+    padding: 2px 4px;
+    width: 90%;
+    text-align: center;
+    max-width: 35px;
+    color: #aaa;
+    margin-bottom: 10px;
+    box-shadow: 1px 2px 2px #ccc;
+
+}
+
+.keyboard__key.pressed .key__instruction{
+    color: #666;
+    border-color: #999;
+}
+
+.key__label{
+    font-weight: 600;
+    text-shadow: 1px 2px 2px #ccc;
+}
+
+.black__key > .key__label{
+    color: white;
+}
+
+.black__key.pressed > .key__label{
+    color: #333;
+}
