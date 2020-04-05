@@ -5,7 +5,8 @@ if (navigator.requestMIDIAccess) {
 }
 var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray, currentIndex;
 currentIndex = 0;
-chooseScale(true);
+//If wanting to use other scales, make this string parameter a global variable
+chooseScale("C Major Scale");
 navigator.requestMIDIAccess()
     .then(onMIDISuccess, onMIDIFailure);
 
@@ -71,9 +72,12 @@ WebMidi.enable(function () {
 function addNoteToWebsite(note) {
     var currentText = document.getElementById("notesList").innerText;
 
-    console.log(currentText);
+    //console.log(currentText);
+    //Example note: c/5
+    note = note.toLowerCase();
+    note = note.charAt(0) + "/" + note.charAt(1);
     currentText += " " + note;
-    console.log(currentText);
+    console.log("THE NOTE IS " + note);
     if (noteMatchesScale(currentText)) {
         document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
         currentIndex += 1;
@@ -112,22 +116,33 @@ function noteMatchesScale(notesText) {
 }
 
 function removeNoteToWebsite(note) {
+    //note = note.toLowerCase();
+    note = note.toLowerCase().charAt(0) + "/" + note.charAt(1);
     var currentText = document.getElementById("notesList").innerText;
     var ret = currentText.replace(note, '');
     document.getElementById("notesList").textContent = ret;
 }
 
 function chooseScale(scaleName) {
-    if (scaleName) {
-        scale = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5"];
+    if (scaleName === "C Major Scale") {
+        scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
     }
+    //Goal with this function
+    //Parameter is a string
+    //String examples: C Minor scale, C Major scale
+    //if(str == "C Minor Scale")
+    //return C minor scale notes
 }
 
 function randomChord(scaleVar) {
-    var editScale = scaleVar;
+    var editScale = [...scaleVar]; //Spread operator
     console.log(editScale);
 
     //editScale = getNoteFromEditScale(editScale)[1];
+
+    //TODO:
+    //Make all of this code block below one function,
+    //Function return an array of 3 notes
     firstArray = getNoteFromEditScale(editScale);
     firstNote = firstArray[0];
     editScale = firstArray[1];
@@ -137,20 +152,14 @@ function randomChord(scaleVar) {
     thirdArray = getNoteFromEditScale(editScale);
     thirdNote = thirdArray[0];
     editScale = thirdArray[1];
-    //var firstNote = editScale[Math.floor(Math.random() * editScale.length)];
-    //var secondNote = editScale[Math.floor(Math.random() * editScale.length)];
-    //var thirdNote = editScale[Math.floor(Math.random() * editScale.length)];
-    //var firstNote = editScale[Math.floor(Math.random() * editScale.length)];
-    //var secondNote = editScale[Math.floor(Math.random() * editScale.length)];
-    //var thirdNote = editScale[Math.floor(Math.random() * editScale.length)];
     console.log("The random chord is " + firstNote + secondNote + thirdNote);
-    chooseScale(scaleVar);
-    console.log(scaleVar);
+    //Fill modified scale
+    chooseScale("C Major Scale");
     return [firstNote + " " + secondNote + " " + thirdNote, [firstNote, secondNote, thirdNote]];
 }
 
 function getNoteFromEditScale(editScaleVar) {
-    var tempEditScaleVar = editScaleVar;
+    var tempEditScaleVar = [...editScaleVar];
     console.log(tempEditScaleVar.length);
     var firstIndex = Math.floor(Math.random() * (tempEditScaleVar.length));
     console.log(firstIndex);
@@ -159,31 +168,44 @@ function getNoteFromEditScale(editScaleVar) {
     return [note, editScaleVar];
 }
 
-function renderChord(notesArray) {
-
+function renderChords(notesArray) {
     const VF = Vex.Flow;
 
-    var vf = new VF.Factory({
-        renderer: { elementId: 'boo', width: 500, height: 200 }
-    });
-
-    var score = vf.EasyScore();
-    var system = vf.System();
+    var div = document.getElementById('boo');
+    var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+    renderer.resize(500, 500);
+    var context = renderer.getContext();
+    var stave = new VF.Stave(0, 0, 500);
+    // Creates a stave at position 10, 40 of width 400 on the canvas.
+    stave.addClef("treble").addTimeSignature("4/4");
+    stave.setContext(context).draw();
+    var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
+    //Voice needs enough notes to fill the amount of beats
+    //The duration of each note needs to add up to the number of beats
     firstChord = randomChord(scale);
     secondChord = randomChord(scale);
     thirdChord = randomChord(scale);
     fourthChord = randomChord(scale);
     chordsArray = [firstChord, secondChord, thirdChord, fourthChord];
-    system.addStave({
-        voices: [
-            score.voice(score.notes('(' + firstChord[0] + ')/q, (' + secondChord[0] + '), (' + thirdChord[0] + '), (' + fourthChord[0] + ')', { stem: 'up' }))
-            //score.voice(score.notes('C#4/h, C#4', {stem: 'down'}))
-        ]
-    }).addClef('treble').addTimeSignature('4/4');
+    var notes = [
+        { clef: "treble", keys: [firstChord[1][0], firstChord[1][1], firstChord[1][2]], duration: 'q' },
+        { clef: "treble", keys: [secondChord[1][0], secondChord[1][1], secondChord[1][2]], duration: 'q' },
+        { clef: "treble", keys: [thirdChord[1][0], thirdChord[1][1], thirdChord[1][2]], duration: 'q' },
+        { clef: "treble", keys: [fourthChord[1][0], fourthChord[1][1], fourthChord[1][2]], duration: 'q' },
+    ];
+    var stave_notes = notes.map(function (note) { return new VF.StaveNote(note); });
+    //Example code below to set code to green
+    //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
+    voice.addTickables(stave_notes);
 
-    vf.draw();
+    var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 500);
+
+
+    voice.draw(context, stave);
+
+
 }
 
-renderChord();
+renderChords();
 console.log(chordsArray);
 
