@@ -5,6 +5,11 @@ if (navigator.requestMIDIAccess) {
 }
 var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray, currentIndex;
 currentIndex = 0;
+var VF;
+var div;
+var renderer;
+var context;
+var stave;
 //If wanting to use other scales, make this string parameter a global variable
 chooseScale("C Major Scale");
 navigator.requestMIDIAccess()
@@ -80,7 +85,9 @@ function addNoteToWebsite(note) {
     console.log("THE NOTE IS " + note);
     if (noteMatchesScale(currentText)) {
         document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
+        chordsArray[currentIndex].color = "green";
         currentIndex += 1;
+        renderChords();
     } else {
         document.getElementById("notesList").innerText = currentText;
         document.getElementById("correctResponse").innerText = "";
@@ -92,13 +99,13 @@ function noteMatchesScale(notesText) {
     console.log("notesText is = " + notesText);
     console.log("chordsArray[currentIndex] = " + chordsArray[currentIndex].toString());
     console.log("Top to bottom what computer is checking for ");
-    console.log(chordsArray[currentIndex][1][0].toString());
-    console.log(chordsArray[currentIndex][1][1].toString());
-    console.log(chordsArray[currentIndex][1][2].toString());
+    console.log(chordsArray[currentIndex].noteArray[0].toString());
+    console.log(chordsArray[currentIndex].noteArray[1].toString());
+    console.log(chordsArray[currentIndex].noteArray[2].toString());
 
-    if (notesText.includes(chordsArray[currentIndex][1][0].toString())) {
-        if (notesText.includes(chordsArray[currentIndex][1][1].toString())) {
-            if (notesText.includes(chordsArray[currentIndex][1][2].toString())) {
+    if (notesText.includes(chordsArray[currentIndex].noteArray[0].toString())) {
+        if (notesText.includes(chordsArray[currentIndex].noteArray[1].toString())) {
+            if (notesText.includes(chordsArray[currentIndex].noteArray[2].toString())) {
                 console.log("CORRECT CORRECT CORRECT");
                 return true;
             } else {
@@ -125,7 +132,7 @@ function removeNoteToWebsite(note) {
 
 function chooseScale(scaleName) {
     if (scaleName === "C Major Scale") {
-        scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
+        scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4"];//"b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
     }
     //Goal with this function
     //Parameter is a string
@@ -155,7 +162,11 @@ function randomChord(scaleVar) {
     console.log("The random chord is " + firstNote + secondNote + thirdNote);
     //Fill modified scale
     chooseScale("C Major Scale");
-    return [firstNote + " " + secondNote + " " + thirdNote, [firstNote, secondNote, thirdNote]];
+
+    return {
+        noteArray: [firstNote, secondNote, thirdNote],
+        color: "black",
+    }
 }
 
 function getNoteFromEditScale(editScaleVar) {
@@ -164,40 +175,53 @@ function getNoteFromEditScale(editScaleVar) {
     var firstIndex = Math.floor(Math.random() * (tempEditScaleVar.length));
     console.log(firstIndex);
     var note = tempEditScaleVar[firstIndex];
-    tempEditScaleVar.splice(firstIndex, firstIndex);
-    return [note, editScaleVar];
+    tempEditScaleVar.splice(firstIndex, 1);
+    return [note, tempEditScaleVar];
 }
 
-function renderChords(notesArray) {
-    const VF = Vex.Flow;
-
-    var div = document.getElementById('boo');
-    var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 500);
-    var context = renderer.getContext();
-    var stave = new VF.Stave(0, 0, 500);
-    // Creates a stave at position 10, 40 of width 400 on the canvas.
-    stave.addClef("treble").addTimeSignature("4/4");
-    stave.setContext(context).draw();
-    var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
-    //Voice needs enough notes to fill the amount of beats
-    //The duration of each note needs to add up to the number of beats
+function generate4RandomChords() {
     firstChord = randomChord(scale);
     secondChord = randomChord(scale);
     thirdChord = randomChord(scale);
     fourthChord = randomChord(scale);
     chordsArray = [firstChord, secondChord, thirdChord, fourthChord];
-    var notes = [
-        { clef: "treble", keys: [firstChord[1][0], firstChord[1][1], firstChord[1][2]], duration: 'q' },
-        { clef: "treble", keys: [secondChord[1][0], secondChord[1][1], secondChord[1][2]], duration: 'q' },
-        { clef: "treble", keys: [thirdChord[1][0], thirdChord[1][1], thirdChord[1][2]], duration: 'q' },
-        { clef: "treble", keys: [fourthChord[1][0], fourthChord[1][1], fourthChord[1][2]], duration: 'q' },
+}
+
+function initialRender() {
+    VF = Vex.Flow;
+    div = document.getElementById('boo');
+    renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+    renderer.resize(500, 500);
+    context = renderer.getContext();
+    stave = new VF.Stave(0, 0, 500);
+    // Creates a stave at position 10, 40 of width 400 on the canvas.
+    stave.addClef("treble").addTimeSignature("4/4");
+    stave.setContext(context).draw();
+}
+
+function renderChords(notesArray) {
+
+    var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
+    //Voice needs enough notes to fill the amount of beats
+    //The duration of each note needs to add up to the number of beats
+
+
+    var chords = [
+        { clef: "treble", keys: [firstChord.noteArray[0], firstChord.noteArray[1], firstChord.noteArray[2]], duration: 'q' },
+        { clef: "treble", keys: [secondChord.noteArray[0], secondChord.noteArray[1], secondChord.noteArray[2]], duration: 'q' },
+        { clef: "treble", keys: [thirdChord.noteArray[0], thirdChord.noteArray[1], thirdChord.noteArray[2]], duration: 'q' },
+        { clef: "treble", keys: [fourthChord.noteArray[0], fourthChord.noteArray[1], fourthChord.noteArray[2]], duration: 'q' },
     ];
-    var stave_notes = notes.map(function (note) { return new VF.StaveNote(note); });
+    var stave_notes = chords.map(function (chord) { return new VF.StaveNote(chord); });
     //Example code below to set code to green
     //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
-    voice.addTickables(stave_notes);
+    //stave_notes[0]
+    //stave_notes[1]
+    //index < currentChordIndex
+    //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
+    stave_notes.forEach((stave_note, index) => { stave_note.setStyle({ fillStyle: chordsArray[index].color, strokeStyle: chordsArray[index].color }) });
 
+    voice.addTickables(stave_notes);
     var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 500);
 
 
@@ -205,7 +229,9 @@ function renderChords(notesArray) {
 
 
 }
-
+initialRender();
+generate4RandomChords();
 renderChords();
+
 console.log(chordsArray);
 
