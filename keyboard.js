@@ -38,6 +38,7 @@ function startKeyboard(){
         const domKey = document.createElement('div');
         domKey.className = `keyboard__key ${key.color}__key`;
         domKey.dataset.keycode = key.keyCode;
+        domKey.dataset.realnote = key.realNote;
         domKey.id = key.keyCode;
         domKey.style = (key.color === 'white') ? `left: calc(50px * ${key.index}); z-index: 0;` : `left: calc(35px + 50px * ${key.index}); z-index: 1;`;
         console.log(domKey);
@@ -85,6 +86,7 @@ function startKeyboard(){
         if(key){
             key.classList.add('pressed');
         }
+        synth.triggerAttack(key.dataset['realnote']);
     }
 
     function keyUp(e){
@@ -93,10 +95,15 @@ function startKeyboard(){
         const key = document.getElementById(e.keyCode);
         key && key.classList.remove('pressed');
         pressedKeys[e.keyCode] = false;
+        synth.triggerRelease();
     }
 
 
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
+
+
+    const synth = new Tone.Synth().toMaster();
+    console.log('synth', synth)
 
 }
