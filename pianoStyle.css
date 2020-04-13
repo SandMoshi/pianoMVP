@@ -36,18 +36,17 @@
 /* ==================== */
 
 #keyboard{
-    width: 80vw;
+    width: calc(9*50px);
     height: 300px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    margin: auto;
     margin-top: 2rem;
+    position: relative;
 }
 
 .keyboard__key{
+    position: absolute;
     height: 250px;
-    width: calc(100%/9);
-    max-width: 50px;
+    width: 50px;
     border: solid 1px #aaa;
     display: flex;
     flex-direction: column;
@@ -56,6 +55,7 @@
     border-radius: 0px 0px 4px 4px;
     box-shadow: 0px 5px 1px rgba(32,32,32,0.2);
 }
+
 
 .white__key{
     background: white;
@@ -71,6 +71,10 @@
     transform: translateY(4px);a
 }
 
+.keyboard__key.black__key.pressed{
+    background: #222;
+}
+
 .key__instruction{
     font-weight: 500;
     border: solid 2px #bbb;
@@ -83,7 +87,13 @@
     color: #aaa;
     margin-bottom: 10px;
     box-shadow: 1px 2px 2px #ccc;
+}
 
+.black__key .key__instruction{
+    font-size: 0.75rem;
+    width: 80%;
+    padding: 0px 4px;
+    box-shadow: none;
 }
 
 .keyboard__key.pressed .key__instruction{
@@ -91,15 +101,27 @@
     border-color: #999;
 }
 
+
 .key__label{
     font-weight: 600;
     text-shadow: 1px 2px 2px #ccc;
 }
 
+.black__key{
+    height: 150px;
+    width: 30px;
+}
+
 .black__key > .key__label{
     color: white;
+    text-shadow: none;
+    font-size: 0.75rem;
 }
 
 .black__key.pressed > .key__label{
     color: #333;
+}
+
+.black__key.pressed > .key__label{
+    color: white;
 }
