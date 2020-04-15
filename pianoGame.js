@@ -3,8 +3,9 @@ if (navigator.requestMIDIAccess) {
 } else {
     alert('Your broswer does not support WebMIDI, please use an updated version of Google Chrome or Firefox in order to use this application.');
 }
-var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray, currentIndex;
-currentIndex = 0;
+var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray;
+var currentIndex = 0;
+var inputtedNotes = [];
 var VF;
 var div;
 var renderer;
@@ -43,12 +44,22 @@ WebMidi.enable(function () {
         function (e) {
             console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
             addNoteToWebsite(e.note.name + e.note.octave);
+            addNoteToArray(e.note.name + e.note.octave);
+            console.log("inputtedNotes = ", inputtedNotes);
+            if (inputMatchesChord()) {
+                document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
+                chordsArray[currentIndex].color = "green";
+                currentIndex += 1;
+                renderChords();
+            }
         }
     );
     input.addListener('noteoff', 'all',
         function (e) {
             console.log("Received 'noteoff' message (" + e.note.name + e.note.octave + ").");
             removeNoteToWebsite(e.note.name + e.note.octave);
+            removeNoteFromArray(e.note.name + e.note.octave);
+            console.log("inputtedNotes = ", inputtedNotes);
         }
     );
 
@@ -83,39 +94,25 @@ function addNoteToWebsite(note) {
     note = note.charAt(0) + "/" + note.charAt(1);
     currentText += " " + note;
     console.log("THE NOTE IS " + note);
-    if (noteMatchesScale(currentText)) {
-        document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
-        chordsArray[currentIndex].color = "green";
-        currentIndex += 1;
-        renderChords();
-    } else {
-        document.getElementById("notesList").innerText = currentText;
-        document.getElementById("correctResponse").innerText = "";
-    }
+
+    document.getElementById("notesList").innerText = currentText;
+    document.getElementById("correctResponse").innerText = "";
+
     //document.getElementById("notesList").innerText = currentText;
 }
 
-function noteMatchesScale(notesText) {
-    console.log("notesText is = " + notesText);
-    console.log("chordsArray[currentIndex] = " + chordsArray[currentIndex].toString());
-    console.log("Top to bottom what computer is checking for ");
-    console.log(chordsArray[currentIndex].noteArray[0].toString());
-    console.log(chordsArray[currentIndex].noteArray[1].toString());
-    console.log(chordsArray[currentIndex].noteArray[2].toString());
+function addNoteToArray(note) {
+    note = note.toLowerCase();
+    note = note.charAt(0) + "/" + note.charAt(1);
+    inputtedNotes.push(note);
+}
 
-    if (notesText.includes(chordsArray[currentIndex].noteArray[0].toString())) {
-        if (notesText.includes(chordsArray[currentIndex].noteArray[1].toString())) {
-            if (notesText.includes(chordsArray[currentIndex].noteArray[2].toString())) {
-                console.log("CORRECT CORRECT CORRECT");
-                return true;
-            } else {
-                console.log("incorrect");
-                return false;
-            }
-        } else {
-            console.log("incorrect");
-            return false;
-        }
+function inputMatchesChord() {
+    console.log("chordsArray[currentIndex].noteArray.sort() ", chordsArray[currentIndex].noteArray.sort().toString());
+    console.log("inputtedNotes.sort() = ", inputtedNotes.sort().toString())
+    if (inputtedNotes.sort().toString() == chordsArray[currentIndex].noteArray.sort().toString()) {
+        console.log("CORRECT");
+        return true;
     } else {
         console.log("incorrect");
         return false;
@@ -126,9 +123,16 @@ function removeNoteToWebsite(note) {
     //note = note.toLowerCase();
     note = note.toLowerCase().charAt(0) + "/" + note.charAt(1);
     var currentText = document.getElementById("notesList").innerText;
-    var ret = currentText.replace(note, '');
-    document.getElementById("notesList").textContent = ret;
+    document.getElementById("notesList").textContent = currentText.replace(note, '');
 }
+
+function removeNoteFromArray(note) {
+    var noteIndex = inputtedNotes.indexOf(note.toLowerCase().charAt(0) + "/" + note.charAt(1));
+    if (noteIndex > -1) {
+        inputtedNotes.splice(noteIndex, 1);
+    }
+}
+
 
 function chooseScale(scaleName) {
     if (scaleName === "C Major Scale") {
@@ -189,9 +193,9 @@ function generate4RandomChords() {
 
 function initialRender() {
     VF = Vex.Flow;
-    div = document.getElementById('boo');
+    div = document.getElementById('mainStaff');
     renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 500);
+    renderer.resize(500, 100);
     context = renderer.getContext();
     stave = new VF.Stave(0, 0, 500);
     // Creates a stave at position 10, 40 of width 400 on the canvas.

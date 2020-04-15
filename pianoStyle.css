@@ -125,3 +125,7 @@
 .black__key.pressed > .key__label{
     color: white;
 }
+
+#notesList {
+    height: 70px;
+}
