@@ -1,4 +1,6 @@
+
 function startKeyboard() {
+    console.log(pianoGame.addNoteToArray);
     console.log('startKeyboard()');
 
     const keyboardDOM = document.getElementById('keyboard'); //Container for the HTML elements
@@ -69,8 +71,6 @@ function startKeyboard() {
         '69': false,
         '89': false,
         '85': false,
-
-
     }
 
     function keyDown(e) {
@@ -85,8 +85,13 @@ function startKeyboard() {
         console.log(key);
         if (key) {
             key.classList.add('pressed');
+        } else {
+            return;
         }
         synth.triggerAttack(key.dataset['realnote']);
+        //Adding note to noteArray
+        pianoGame.addNoteToArray(key.dataset['realnote']);
+
     }
 
     function keyUp(e) {
@@ -96,6 +101,8 @@ function startKeyboard() {
         key && key.classList.remove('pressed');
         pressedKeys[e.keyCode] = false;
         synth.triggerRelease();
+        //Removing note from array
+        pianoGame.removeNoteFromArray(key.dataset['realnote']);
     }
 
 
@@ -105,5 +112,7 @@ function startKeyboard() {
 
     const synth = new Tone.Synth().toMaster();
     console.log('synth', synth)
+    //console.log(inputtedNotes);
+
 
 }
