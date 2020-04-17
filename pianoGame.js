@@ -42,11 +42,13 @@ const pianoGame = (function runPianoGame() {
         // input = WebMidi.getInputById("1809568182");
         // input = WebMidi.inputs[0];
 
+        //If no device found
+        if(!input) return;
+
         // Listen for a 'note on' message on all channels
         input.addListener('noteon', 'all',
             function (e) {
                 console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
-                addNoteToWebsite(e.note.name + e.note.octave);
                 addNoteToArray(e.note.name + e.note.octave);
                 console.log("inputtedNotes = ", inputtedNotes);
             }
@@ -54,7 +56,6 @@ const pianoGame = (function runPianoGame() {
         input.addListener('noteoff', 'all',
             function (e) {
                 console.log("Received 'noteoff' message (" + e.note.name + e.note.octave + ").");
-                removeNoteToWebsite(e.note.name + e.note.octave);
                 removeNoteFromArray(e.note.name + e.note.octave);
                 console.log("inputtedNotes = ", inputtedNotes);
             }
@@ -99,7 +100,7 @@ const pianoGame = (function runPianoGame() {
     }
 
     function addNoteToArray(note) {
-
+        addNoteToWebsite(note); //Display the notes in the DOM
         note = note.toLowerCase();
         note = note.charAt(0) + "/" + note.charAt(1);
         inputtedNotes.push(note);
@@ -108,6 +109,10 @@ const pianoGame = (function runPianoGame() {
             document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
+            if(currentIndex >= chordsArray.length){
+                currentIndex = 0;
+                generate4RandomChords();
+            }
             renderChords();
         }
     }
@@ -124,7 +129,7 @@ const pianoGame = (function runPianoGame() {
         }
     }
 
-    function removeNoteToWebsite(note) {
+    function removeNoteFromWebsite(note) {
         //note = note.toLowerCase(); 
         note = note.toLowerCase().charAt(0) + "/" + note.charAt(1);
         var currentText = document.getElementById("notesList").innerText;
@@ -132,6 +137,7 @@ const pianoGame = (function runPianoGame() {
     }
 
     function removeNoteFromArray(note) {
+        removeNoteFromWebsite(note); //Remove this note from the DOM
         var noteIndex = inputtedNotes.indexOf(note.toLowerCase().charAt(0) + "/" + note.charAt(1));
         if (noteIndex > -1) {
             inputtedNotes.splice(noteIndex, 1);
@@ -216,7 +222,6 @@ const pianoGame = (function runPianoGame() {
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
 
-
         var chords = [
             { clef: "treble", keys: [firstChord.noteArray[0], firstChord.noteArray[1], firstChord.noteArray[2]], duration: 'q' },
             { clef: "treble", keys: [secondChord.noteArray[0], secondChord.noteArray[1], secondChord.noteArray[2]], duration: 'q' },
@@ -244,9 +249,7 @@ const pianoGame = (function runPianoGame() {
     generate4RandomChords();
     renderChords();
 
-    //console.log(chordsArray);
-    //Return object
-
+    //Return Object: This object give us access to theese functions/objects from outside this function
     return {
         addNoteToArray: addNoteToArray,
         removeNoteFromArray: removeNoteFromArray,

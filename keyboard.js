@@ -1,6 +1,5 @@
 
 function startKeyboard() {
-    console.log(pianoGame.addNoteToArray);
     console.log('startKeyboard()');
 
     const keyboardDOM = document.getElementById('keyboard'); //Container for the HTML elements
@@ -43,7 +42,6 @@ function startKeyboard() {
         domKey.dataset.realnote = key.realNote;
         domKey.id = key.keyCode;
         domKey.style = (key.color === 'white') ? `left: calc(50px * ${key.index}); z-index: 0;` : `left: calc(35px + 50px * ${key.index}); z-index: 1;`;
-        console.log(domKey);
         keyboardDOM.appendChild(domKey);
 
         const instruction = document.createElement('span');
@@ -74,15 +72,12 @@ function startKeyboard() {
     }
 
     function keyDown(e) {
-
         //If already pressed, stop
         if (pressedKeys[e.keyCode]) { return }
         else pressedKeys[e.keyCode] = true;
 
-        console.log('key down:', e.keyCode);
         //Find the matching key element and highlight
         const key = document.getElementById(e.keyCode);
-        console.log(key);
         if (key) {
             key.classList.add('pressed');
         } else {
@@ -95,9 +90,9 @@ function startKeyboard() {
     }
 
     function keyUp(e) {
-        console.log('key up:', e.keyCode);
         //Find matching element and un-highlight
         const key = document.getElementById(e.keyCode);
+        if(!key) return;
         key && key.classList.remove('pressed');
         pressedKeys[e.keyCode] = false;
         synth.triggerRelease();
@@ -111,8 +106,4 @@ function startKeyboard() {
 
 
     const synth = new Tone.Synth().toMaster();
-    console.log('synth', synth)
-    //console.log(inputtedNotes);
-
-
 }
