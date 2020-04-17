@@ -118,8 +118,7 @@ const pianoGame = (function runPianoGame() {
     }
 
     function inputMatchesChord() {
-        console.log("chordsArray[currentIndex].noteArray.sort() ", chordsArray[currentIndex].noteArray.sort().toString());
-        console.log("inputtedNotes.sort() = ", inputtedNotes.sort().toString())
+        console.log("Looking for:", chordsArray[currentIndex].noteArray.sort().toString());
         if (inputtedNotes.sort().toString() == chordsArray[currentIndex].noteArray.sort().toString()) {
             console.log("CORRECT");
             return true;
@@ -176,21 +175,44 @@ const pianoGame = (function runPianoGame() {
         thirdArray = getNoteFromEditScale(editScale);
         thirdNote = thirdArray[0];
         editScale = thirdArray[1];
-        console.log("The random chord is " + firstNote + secondNote + thirdNote);
+        const chord = [firstNote, secondNote, thirdNote];
+        chord.sort(compareNotes); //Vexflow requires notes to be sorted (by verticality)
+        console.log("The (sorted) random chord is ", chord);
         //Fill modified scale
         chooseScale("C Major Scale");
 
         return {
-            noteArray: [firstNote, secondNote, thirdNote],
+            noteArray: chord,
             color: "black",
         }
     }
 
+    function compareNotes(a,b){
+        let aOctave = a.charAt(a.length - 1);
+        let aNote = a.charAt(0);
+        let bOctave = b.charAt(b.length - 1);
+        let bNote = b.charAt(0);
+        //First compare octaves then compare notes
+        if(aOctave === bOctave){
+            //C --> D --> E --> F --> G --> A --> B
+            const orderedNotes = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
+            if(orderedNotes.indexOf(bNote) > -1 && orderedNotes.indexOf(aNote) > -1){
+                return orderedNotes.indexOf(aNote) - orderedNotes.indexOf(bNote);
+            }else{
+                return 0;
+            }       
+        }
+        else if(aOctave < bOctave){
+            return -1
+        }else{
+            //aOctave > bOctave
+            return 1;
+        }
+    };
+
     function getNoteFromEditScale(editScaleVar) {
         var tempEditScaleVar = [...editScaleVar];
-        console.log(tempEditScaleVar.length);
         var firstIndex = Math.floor(Math.random() * (tempEditScaleVar.length));
-        console.log(firstIndex);
         var note = tempEditScaleVar[firstIndex];
         tempEditScaleVar.splice(firstIndex, 1);
         return [note, tempEditScaleVar];
@@ -217,18 +239,18 @@ const pianoGame = (function runPianoGame() {
     }
 
     function renderChords(notesArray) {
-
+        console.log('rendering!');
         var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
 
         var chords = [
-            { clef: "treble", keys: [firstChord.noteArray[0], firstChord.noteArray[1], firstChord.noteArray[2]], duration: 'q' },
-            { clef: "treble", keys: [secondChord.noteArray[0], secondChord.noteArray[1], secondChord.noteArray[2]], duration: 'q' },
-            { clef: "treble", keys: [thirdChord.noteArray[0], thirdChord.noteArray[1], thirdChord.noteArray[2]], duration: 'q' },
-            { clef: "treble", keys: [fourthChord.noteArray[0], fourthChord.noteArray[1], fourthChord.noteArray[2]], duration: 'q' },
+            { clef: "treble", keys: firstChord.noteArray, duration: 'q' },
+            { clef: "treble", keys: secondChord.noteArray, duration: 'q' },
+            { clef: "treble", keys: thirdChord.noteArray, duration: 'q' },
+            { clef: "treble", keys: fourthChord.noteArray, duration: 'q' },
         ];
-        var stave_notes = chords.map(function (chord) { return new VF.StaveNote(chord); });
+        var stave_notes = chords.map(function (chord) { console.log(chord); return new VF.StaveNote(chord); });
         //Example code below to set code to green
         //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
         //stave_notes[0]
