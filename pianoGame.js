@@ -20,8 +20,6 @@ const pianoGame = (function runPianoGame() {
         .then(onMIDISuccess, onMIDIFailure);
 
     function onMIDISuccess(midiAccess) {
-        console.log(midiAccess);
-
         var inputs = midiAccess.inputs;
         var outputs = midiAccess.outputs;
     }
@@ -33,8 +31,7 @@ const pianoGame = (function runPianoGame() {
     WebMidi.enable(function () {
 
         // Viewing available inputs and outputs
-        console.log(WebMidi.inputs);
-        console.log(WebMidi.outputs);
+        console.log("WebMidi.inputs:" ,WebMidi.inputs, "WebMidi.outputs:",WebMidi.outputs);
 
         // Retrieve an input by name, id or index
         var input = WebMidi.inputs[0];
@@ -156,29 +153,11 @@ const pianoGame = (function runPianoGame() {
     }
 
     function randomChord(scaleVar) {
-        var editScale = [...scaleVar]; //Spread operator
-        console.log(editScale);
-
-        //editScale = getNoteFromEditScale(editScale)[1];
-
-        //TODO:
-        //Make all of this code block below one function,
         //Function return an array of 3 notes
-        firstArray = getNoteFromEditScale(editScale);
-        firstNote = firstArray[0];
-        editScale = firstArray[1];
-        secondArray = getNoteFromEditScale(editScale);
-        secondNote = secondArray[0];
-        editScale = secondArray[1];
-        thirdArray = getNoteFromEditScale(editScale);
-        thirdNote = thirdArray[0];
-        editScale = thirdArray[1];
-        const chord = [firstNote, secondNote, thirdNote];
+        const chord = getNotesFromScale(scaleVar, 3);
         chord.sort(compareNotes); //Vexflow requires notes to be sorted (by verticality)
-        console.log("The (sorted) random chord is ", chord);
         //Fill modified scale
         chooseScale("C Major Scale");
-
         return {
             noteArray: chord,
             color: "black",
@@ -208,12 +187,18 @@ const pianoGame = (function runPianoGame() {
         }
     };
 
-    function getNoteFromEditScale(editScaleVar) {
-        var tempEditScaleVar = [...editScaleVar];
-        var firstIndex = Math.floor(Math.random() * (tempEditScaleVar.length));
-        var note = tempEditScaleVar[firstIndex];
-        tempEditScaleVar.splice(firstIndex, 1);
-        return [note, tempEditScaleVar];
+    function getNotesFromScale(scale, int){
+        //scale is the array of possible notes in the scale
+        //int is how many unique notes to grab
+        var tempScale = [...scale];
+        var chosenNotes = [];
+        for(var i = 0; i < int; i++){
+            const randomIndex = Math.floor(Math.random() * (tempScale.length));
+            const randomNote = tempScale[randomIndex];
+            chosenNotes.push(randomNote);
+            tempScale.splice(randomIndex, 1); //Remove this note from the temporary scale so it isn't chosen twice
+        }
+        return chosenNotes;
     }
 
     function generate4RandomChords() {
@@ -222,6 +207,7 @@ const pianoGame = (function runPianoGame() {
         thirdChord = randomChord(scale);
         fourthChord = randomChord(scale);
         chordsArray = [firstChord, secondChord, thirdChord, fourthChord];
+        chordsArray.forEach(chord => console.log('The new chord is:', chord.noteArray));
     }
 
     function initialRender() {
@@ -238,8 +224,7 @@ const pianoGame = (function runPianoGame() {
 
     function renderChords(notesArray) {
         console.log('rendering!');
-        //Clear previous notes
-        console.log('context', context);
+        //Clear previous chords/notes
         if(context){
             context.clear();
             stave.setContext(context).draw(); //redraw Stave
@@ -248,13 +233,15 @@ const pianoGame = (function runPianoGame() {
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
 
-        var chords = [
-            { clef: "treble", keys: firstChord.noteArray, duration: 'q' },
-            { clef: "treble", keys: secondChord.noteArray, duration: 'q' },
-            { clef: "treble", keys: thirdChord.noteArray, duration: 'q' },
-            { clef: "treble", keys: fourthChord.noteArray, duration: 'q' },
-        ];
-        var stave_notes = chords.map(function (chord) { console.log(chord); return new VF.StaveNote(chord); });
+        var chords = chordsArray.map( chordObject => {
+            return{
+                clef:'treble',
+                keys: chordObject.noteArray.sort(compareNotes),
+                duration: 'q'
+            }
+        });
+        
+        var stave_notes = chords.map(function (chord) { return new VF.StaveNote(chord); });
         //Example code below to set code to green
         //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
         //stave_notes[0]
@@ -268,7 +255,6 @@ const pianoGame = (function runPianoGame() {
 
 
         voice.draw(context, stave);
-        console.log('context', context);
     }
     initialRender();
     generate4RandomChords();
