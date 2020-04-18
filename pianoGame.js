@@ -50,14 +50,12 @@ const pianoGame = (function runPianoGame() {
             function (e) {
                 console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
                 addNoteToArray(e.note.name + e.note.octave);
-                console.log("inputtedNotes = ", inputtedNotes);
             }
         );
         input.addListener('noteoff', 'all',
             function (e) {
                 console.log("Received 'noteoff' message (" + e.note.name + e.note.octave + ").");
                 removeNoteFromArray(e.note.name + e.note.octave);
-                console.log("inputtedNotes = ", inputtedNotes);
             }
         );
 
@@ -104,15 +102,17 @@ const pianoGame = (function runPianoGame() {
         note = note.toLowerCase();
         note = note.charAt(0) + "/" + note.charAt(1);
         inputtedNotes.push(note);
-        console.log(inputtedNotes);
+        //Check if we match the chord
         if (inputMatchesChord()) {
             document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
+            //Determine if we finished all the notes)
             if(currentIndex >= chordsArray.length){
                 currentIndex = 0;
                 generate4RandomChords();
             }
+            //Change chord to green or draw new chords
             renderChords();
         }
     }
@@ -141,8 +141,6 @@ const pianoGame = (function runPianoGame() {
         if (noteIndex > -1) {
             inputtedNotes.splice(noteIndex, 1);
         }
-        console.log(inputtedNotes);
-
     }
 
 
@@ -240,6 +238,12 @@ const pianoGame = (function runPianoGame() {
 
     function renderChords(notesArray) {
         console.log('rendering!');
+        //Clear previous notes
+        console.log('context', context);
+        if(context){
+            context.clear();
+            stave.setContext(context).draw(); //redraw Stave
+        }
         var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
@@ -264,8 +268,7 @@ const pianoGame = (function runPianoGame() {
 
 
         voice.draw(context, stave);
-
-
+        console.log('context', context);
     }
     initialRender();
     generate4RandomChords();
