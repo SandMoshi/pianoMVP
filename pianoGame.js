@@ -6,7 +6,7 @@ const pianoGame = (function runPianoGame() {
     } else {
         alert('Your broswer does not support WebMIDI, please use an updated version of Google Chrome or Firefox in order to use this application.');
     }
-    var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray;
+    var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray, chordsFromScale;
     var currentIndex = 0;
     var inputtedNotes = [];
     var VF;
@@ -31,7 +31,7 @@ const pianoGame = (function runPianoGame() {
     WebMidi.enable(function () {
 
         // Viewing available inputs and outputs
-        console.log("WebMidi.inputs:" ,WebMidi.inputs, "WebMidi.outputs:",WebMidi.outputs);
+        console.log("WebMidi.inputs:", WebMidi.inputs, "WebMidi.outputs:", WebMidi.outputs);
 
         // Retrieve an input by name, id or index
         var input = WebMidi.inputs[0];
@@ -40,7 +40,7 @@ const pianoGame = (function runPianoGame() {
         // input = WebMidi.inputs[0];
 
         //If no device found
-        if(!input) return;
+        if (!input) return;
 
         // Listen for a 'note on' message on all channels
         input.addListener('noteon', 'all',
@@ -105,7 +105,7 @@ const pianoGame = (function runPianoGame() {
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
             //Determine if we finished all the notes)
-            if(currentIndex >= chordsArray.length){
+            if (currentIndex >= chordsArray.length) {
                 currentIndex = 0;
                 generate4RandomChords();
             }
@@ -143,7 +143,8 @@ const pianoGame = (function runPianoGame() {
 
     function chooseScale(scaleName) {
         if (scaleName === "C Major Scale") {
-            scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4"];//"b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
+            scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4"];//"b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
+            chordsFromScale = [["c/4", "f/4"], ["c/4", "e/4"], ["c/4", "e/4", "g/4"], ["f/4", "a/4"], ["d/4", "f/4", "a/4"], ["c/4", "e/4", "g/4", "b/4"], ["e/4", "g/4", "b/4"], ["e/4", "g/4", "a/4", "b/4"]];;
         }
         //Goal with this function
         //Parameter is a string
@@ -153,8 +154,10 @@ const pianoGame = (function runPianoGame() {
     }
 
     function randomChord(scaleVar) {
-        //Function return an array of 3 notes
-        const chord = getNotesFromScale(scaleVar, 3);
+        //getNotesFromScale returns an array of 3 notes (RANDOMLY)
+        //chordsFromScale is an array that comes with the scale, with all the popular chord combinations
+        //const chord = getNotesFromScale(scaleVar, 3);
+        chord = chordsFromScale[Math.floor(Math.random() * chordsFromScale.length)];
         chord.sort(compareNotes); //Vexflow requires notes to be sorted (by verticality)
         //Fill modified scale
         chooseScale("C Major Scale");
@@ -164,35 +167,35 @@ const pianoGame = (function runPianoGame() {
         }
     }
 
-    function compareNotes(a,b){
+    function compareNotes(a, b) {
         let aOctave = a.charAt(a.length - 1);
         let aNote = a.charAt(0);
         let bOctave = b.charAt(b.length - 1);
         let bNote = b.charAt(0);
         //First compare octaves then compare notes
-        if(aOctave === bOctave){
+        if (aOctave === bOctave) {
             //C --> D --> E --> F --> G --> A --> B
             const orderedNotes = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
-            if(orderedNotes.indexOf(bNote) > -1 && orderedNotes.indexOf(aNote) > -1){
+            if (orderedNotes.indexOf(bNote) > -1 && orderedNotes.indexOf(aNote) > -1) {
                 return orderedNotes.indexOf(aNote) - orderedNotes.indexOf(bNote);
-            }else{
+            } else {
                 return 0;
-            }       
+            }
         }
-        else if(aOctave < bOctave){
+        else if (aOctave < bOctave) {
             return -1
-        }else{
+        } else {
             //aOctave > bOctave
             return 1;
         }
     };
 
-    function getNotesFromScale(scale, int){
+    function getNotesFromScale(scale, int) {
         //scale is the array of possible notes in the scale
         //int is how many unique notes to grab
         var tempScale = [...scale];
         var chosenNotes = [];
-        for(var i = 0; i < int; i++){
+        for (var i = 0; i < int; i++) {
             const randomIndex = Math.floor(Math.random() * (tempScale.length));
             const randomNote = tempScale[randomIndex];
             chosenNotes.push(randomNote);
@@ -225,7 +228,7 @@ const pianoGame = (function runPianoGame() {
     function renderChords(notesArray) {
         console.log('rendering!');
         //Clear previous chords/notes
-        if(context){
+        if (context) {
             context.clear();
             stave.setContext(context).draw(); //redraw Stave
         }
@@ -233,14 +236,14 @@ const pianoGame = (function runPianoGame() {
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
 
-        var chords = chordsArray.map( chordObject => {
-            return{
-                clef:'treble',
+        var chords = chordsArray.map(chordObject => {
+            return {
+                clef: 'treble',
                 keys: chordObject.noteArray.sort(compareNotes),
                 duration: 'q'
             }
         });
-        
+
         var stave_notes = chords.map(function (chord) { return new VF.StaveNote(chord); });
         //Example code below to set code to green
         //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
