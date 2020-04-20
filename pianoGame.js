@@ -210,6 +210,7 @@ const pianoGame = (function runPianoGame() {
             chordsFromScale.push([scale[i], scale[i + 5]]);
         }
 
+
         //Creating the sevenths  
         for (var i = 0; i < 7; i++) {
             chordsFromScale.push([scale[i], scale[i + 6]]);
