@@ -6,9 +6,10 @@ const pianoGame = (function runPianoGame() {
     } else {
         alert('Your broswer does not support WebMIDI, please use an updated version of Google Chrome or Firefox in order to use this application.');
     }
-    var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray, chordsFromScale;
+    var scale, firstChord, secondChord, thirdChord, fourthChord, chordsArray;
     var currentIndex = 0;
     var inputtedNotes = [];
+    var chordsFromScale = [];
     var VF;
     var div;
     var renderer;
@@ -142,9 +143,12 @@ const pianoGame = (function runPianoGame() {
 
 
     function chooseScale(scaleName) {
-        if (scaleName === "C Major Scale") {
-            scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4"];//"b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
-            chordsFromScale = [["c/4", "f/4"], ["c/4", "e/4"], ["c/4", "e/4", "g/4"], ["f/4", "a/4"], ["d/4", "f/4", "a/4"], ["c/4", "e/4", "g/4", "b/4"], ["e/4", "g/4", "b/4"], ["e/4", "g/4", "a/4", "b/4"]];;
+        if (scaleName === "C Major Scale") { // 0 Sharps
+            scale = ["c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4", "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5"];
+            //chordsFromScale = [["c/4", "f/4"], ["c/4", "e/4"], ["c/4", "e/4", "g/4"], ["f/4", "a/4"], ["d/4", "f/4", "a/4"], ["c/4", "e/4", "g/4", "b/4"], ["e/4", "g/4", "b/4"], ["e/4", "g/4", "a/4", "b/4"]];;
+            generateChordsFromScale(scale); //This function changes chordsFromScale and fills it up with chords
+        } else if (scaleName == "G Major Scale") { // 1 Sharp
+            scale = ["g/4", "a/4", "b/4", "c/4", "d/4", "e/4", "f#/4", "g/5", "a/5", "b/5", "c/5", "d/5", "e/5", "f#/5"];
         }
         //Goal with this function
         //Parameter is a string
@@ -157,7 +161,7 @@ const pianoGame = (function runPianoGame() {
         //getNotesFromScale returns an array of 3 notes (RANDOMLY)
         //chordsFromScale is an array that comes with the scale, with all the popular chord combinations
         //const chord = getNotesFromScale(scaleVar, 3);
-        chord = chordsFromScale[Math.floor(Math.random() * chordsFromScale.length)];
+        chord = chordsFromScale[Math.floor(Math.random() * (chordsFromScale.length))];
         chord.sort(compareNotes); //Vexflow requires notes to be sorted (by verticality)
         //Fill modified scale
         chooseScale("C Major Scale");
@@ -165,6 +169,64 @@ const pianoGame = (function runPianoGame() {
             noteArray: chord,
             color: "black",
         }
+    }
+
+    //Precondition: scale has to be two octaves
+    function generateChordsFromScale(scale) { //SIDENOTE this is assuming there are 7 NOTES in a scale (C to B in C major), most scales have seven but some do not!
+        chordsFromScale = []; //I am using the chordsFromScale array here, 
+
+        //First I create the octaves (Same notes)
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 7]]);
+        }
+
+        //Creating the thirds (I forget if this is the right musical term, two notes spaced apart)
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 2]]);
+        }
+
+        //Creating the fourths
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 3]]);
+        }
+
+        //Creating the fifths 
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 4]]);
+        }
+
+        //Creating the major fifth chords 
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 2], scale[i + 4]]);
+        }
+
+        //Creating the major sixth chords? (I forget the name of this chord type) 
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 2], scale[i + 5]]);
+        }
+
+        //Creating the sixths  
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 5]]);
+        }
+
+        //Creating the sevenths  
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 6]]);
+        }
+
+        //Creating the major seventh chords
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 2], scale[i + 4], scale[i + 6]]);
+        }
+
+        //Creating the major seventh chords (without a note in the middle)
+        for (var i = 0; i < 7; i++) {
+            chordsFromScale.push([scale[i], scale[i + 4], scale[i + 6]]);
+        }
+
+        console.log(chordsFromScale);
+
     }
 
     function compareNotes(a, b) {
