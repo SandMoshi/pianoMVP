@@ -87,7 +87,6 @@ const pianoGame = (function runPianoGame() {
         note = note.toLowerCase();
         note = note.charAt(0) + "/" + note.charAt(1);
         currentText += " " + note;
-        console.log("THE NOTE IS " + note);
 
         document.getElementById("notesList").innerText = currentText;
         document.getElementById("correctResponse").innerText = "";
@@ -116,12 +115,12 @@ const pianoGame = (function runPianoGame() {
     }
 
     function inputMatchesChord() {
-        console.log("Looking for:", chordsArray[currentIndex].noteArray.sort().toString());
+        console.log("Looking for:", chordsArray[currentIndex].noteArray.sort().toString(), ' found:', inputtedNotes.sort().toString() );
         if (inputtedNotes.sort().toString() == chordsArray[currentIndex].noteArray.sort().toString()) {
             console.log("CORRECT");
             return true;
         } else {
-            console.log("incorrect");
+            console.log("INCORRECT");
             return false;
         }
     }
@@ -225,9 +224,6 @@ const pianoGame = (function runPianoGame() {
         for (var i = 0; i < 7; i++) {
             chordsFromScale.push([scale[i], scale[i + 4], scale[i + 6]]);
         }
-
-        console.log(chordsFromScale);
-
     }
 
     function compareNotes(a, b) {

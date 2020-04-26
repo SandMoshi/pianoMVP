@@ -36,7 +36,7 @@
 /* ==================== */
 
 #keyboard{
-    width: calc(9*50px);
+    width: calc(14*50px);
     height: 300px;
     margin: auto;
     margin-top: 2rem;
@@ -87,6 +87,7 @@
     color: #aaa;
     margin-bottom: 10px;
     box-shadow: 1px 2px 2px #ccc;
+    height: 32px;
 }
 
 .black__key .key__instruction{
@@ -94,11 +95,21 @@
     width: 80%;
     padding: 0px 4px;
     box-shadow: none;
+    height: 22px;
 }
 
 .keyboard__key.pressed .key__instruction{
     color: #666;
     border-color: #999;
+}
+
+.keyboard__key.button-SHIFT .key__instruction,
+.keyboard__key.button-ENTER .key__instruction,
+.keyboard__key.button-TAB .key__instruction{
+    font-size: 0.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
