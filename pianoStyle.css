@@ -31,6 +31,15 @@
 #correctResponse {
     
 }
+
+.simpleRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.simpleRow--center{
+    justify-content: center;
+}
 /* ==================== */
 /*    KEYBOARD STYLES   */
 /* ==================== */
@@ -138,5 +147,40 @@
 }
 
 #notesList {
-    height: 70px;
+    height: 105px;
+    width: 100%;
+}
+/* ==================== */
+/*    SCORE STYLES   */
+/* ==================== */
+
+.score__container{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 80px;
+}
+
+.score__bg{
+    height: 100px;
+    padding: 25% 0.5rem 25% 0.25rem;
+    background: url('./images/Icons/piano-upper-view/piano-upper.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.score__title{
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+    margin: 0px;
+    color: white;
+}
+
+.score{
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 2rem;
+    color: white;
+    padding-right: 20px;
 }

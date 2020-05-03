@@ -15,6 +15,16 @@ const pianoGame = (function runPianoGame() {
     var renderer;
     var context;
     var stave;
+
+    const scoreObj = {
+        score_DOM: document.getElementsByClassName('score')[0],
+        session_score: 0,
+        increment: (number) => { 
+            scoreObj.session_score += number;
+            scoreObj.score_DOM.innerText = scoreObj.session_score;
+        }
+    }
+
     //If wanting to use other scales, make this string parameter a global variable
     chooseScale("C Major Scale");
     navigator.requestMIDIAccess()
@@ -102,6 +112,8 @@ const pianoGame = (function runPianoGame() {
         //Check if we match the chord
         if (inputMatchesChord()) {
             document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
+            console.log(scoreObj);
+            scoreObj.increment(1);
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
             //Determine if we finished all the notes)
@@ -321,6 +333,11 @@ const pianoGame = (function runPianoGame() {
     initialRender();
     generate4RandomChords();
     renderChords();
+
+    window.onload  = () => {
+        console.log(scoreObj);
+        scoreObj.score_DOM.innerText = scoreObj.session_score
+    };
 
     //Return Object: This object give us access to theese functions/objects from outside this function
     return {
