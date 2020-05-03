@@ -18,30 +18,28 @@ function startKeyboard() {
 
     const keys = [
         //constructor(note, octave, color, keyCode, keyChar, index)
-        new key('c', 4, 'white', 16, 'SHIFT', 0),
-        new key('c#', 4, 'black', 9, 'TAB', 0),
-        new key('d', 4, 'white', 65, 'A', 1),
-        new key('d#', 4, 'black', 81, 'Q', 1),
-        new key('e', 4, 'white', 83, 'S', 2),
-        new key('f', 4, 'white', 68, 'D', 3),
-        new key('f#', 4, 'black', 69, 'E', 3),
-        new key('g', 4, 'white', 70, 'F', 4),
-        new key('g#', 4, 'black', 82, 'R', 4),
-        new key('a', 4, 'white', 71, 'G', 5),
-        new key('a#', 4, 'black', 84, 'T', 5),
-        new key('b', 4, 'white', 72, 'H', 6),
-        new key('c', 5, 'white', 74, 'J', 7),
-        new key('c#', 5, 'black', 85, 'U', 7),
-        new key('d', 5, 'white', 75, 'K', 8),
-        new key('d#', 5, 'black', 73, 'I', 8),
-        new key('e', 5, 'white', 76, 'L', 9),
-        new key('f', 5, 'white', 186, ';', 10),
-        new key('f#', 5, 'black', 80, 'P', 10),
-        new key('g', 5, 'white', 222, '\'', 11),
-        new key('g#', 5, 'black', 219, '{', 11),
-        new key('a', 5, 'white', 13, 'ENTER', 12),
-        new key('a#', 5, 'black', 221, '}', 12),
-        new key('b', 5, 'white', 220, '\\', 13),
+        new key('c', 4, 'white', 65, 'A', 0),
+        new key('c#', 4, 'black', 81, 'Q', 0),
+        new key('d', 4, 'white', 83, 'S', 1),
+        new key('d#', 4, 'black', 87, 'W', 1),
+        new key('e', 4, 'white', 68, 'D', 2),
+        new key('f', 4, 'white', 70, 'F', 3),
+        new key('f#', 4, 'black', 82, 'R', 3),
+        new key('g', 4, 'white', 71, 'G', 4),
+        new key('g#', 4, 'black', 84, 'T', 4),
+        new key('a', 4, 'white', 72, 'H', 5),
+        new key('a#', 4, 'black', 89, 'Y', 5),
+        new key('b', 4, 'white', 74, 'J', 6),
+        new key('c', 5, 'white', 75, 'K', 7),
+        new key('c#', 5, 'black', 73, 'I', 7),
+        new key('d', 5, 'white', 76, 'L', 8),
+        new key('d#', 5, 'black', 79, 'O', 8),
+        new key('e', 5, 'white', 186, ';', 9),
+        new key('f', 5, 'white', 222, '\'', 10),
+        new key('f#', 5, 'black', 221, ']', 10),
+        new key('g', 5, 'white', 13, 'ENTER', 11),
+        new key('g#', 5, 'black', 220, '\\', 11),
+        // new key('', '', 'white', false, '', 12),  // <-- this is a empty key
     ]
 
     keys.forEach((key, index) => {
@@ -54,15 +52,19 @@ function startKeyboard() {
         domKey.style = (key.color === 'white') ? `left: calc(50px * ${key.index}); z-index: 0;` : `left: calc(35px + 50px * ${key.index}); z-index: 1;`;
         keyboardDOM.appendChild(domKey);
 
-        const instruction = document.createElement('span');
-        instruction.innerText = key.keyChar;
-        instruction.className = 'key__instruction';
-        domKey.appendChild(instruction);
+        if(key.keyChar){
+            const instruction = document.createElement('span');
+            instruction.innerText = key.keyChar;
+            instruction.className = 'key__instruction';
+            domKey.appendChild(instruction);
+        }
 
-        const label = document.createElement('span');
-        label.innerText = key.realNote;
-        label.className = 'key__label';
-        domKey.appendChild(label);
+        if(key.realNote){
+            const label = document.createElement('span');
+            label.innerText = key.realNote;
+            label.className = 'key__label';
+            domKey.appendChild(label);
+        }
     })
 
     const pressedKeys = {
