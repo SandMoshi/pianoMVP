@@ -24,6 +24,12 @@ const pianoGame = (function runPianoGame() {
             scoreObj.score_DOM.innerText = scoreObj.session_score;
             //Save to local storage
             localStorage.setItem('scoreObj', JSON.stringify(scoreObj));
+        },
+        resetScore: () => {
+            //Reset the session and stored score
+            scoreObj.session_score = 0;
+            scoreObj.score_DOM.innerText = scoreObj.session_score;
+            localStorage.setItem('scoreObj', JSON.stringify(scoreObj));
         }
     }
 
@@ -345,6 +351,9 @@ const pianoGame = (function runPianoGame() {
         console.log(scoreObj);
         scoreObj.score_DOM.innerText = scoreObj.session_score
     };
+
+    const resetScoreButton = document.getElementsByClassName('button__resetScore')[0];
+    resetScoreButton.addEventListener('click', () => { console.log('reset!'); scoreObj.resetScore() })
 
     //Return Object: This object give us access to theese functions/objects from outside this function
     return {

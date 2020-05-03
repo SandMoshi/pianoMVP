@@ -184,3 +184,21 @@
     color: white;
     padding-right: 20px;
 }
+
+.button__resetScore{
+    font-size: 0.75rem;
+    background: hsl(0, 100%, 90%);
+    color: hsl(0, 100%, 40%);
+    border-radius: 10%;
+    border: solid 1px hsl(0, 100%, 40%);
+    line-height: 0.75rem;
+    padding: 0.25rem 0px;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.button__resetScore:hover{
+    background: hsl(0, 100%, 70%);
+    border-color: hsl(0, 100%, 50%);
+    color: white;
+}
