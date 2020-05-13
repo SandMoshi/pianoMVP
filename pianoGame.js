@@ -19,7 +19,7 @@ const pianoGame = (function runPianoGame() {
     const scoreObj = {
         score_DOM: document.getElementsByClassName('score')[0],
         session_score: 0,
-        increment: (number) => { 
+        increment: (number) => {
             scoreObj.session_score += number;
             scoreObj.score_DOM.innerText = scoreObj.session_score;
             //Save to local storage
@@ -135,7 +135,7 @@ const pianoGame = (function runPianoGame() {
     }
 
     function inputMatchesChord() {
-        console.log("Looking for:", chordsArray[currentIndex].noteArray.sort().toString(), ' found:', inputtedNotes.sort().toString() );
+        console.log("Looking for:", chordsArray[currentIndex].noteArray.sort().toString(), ' found:', inputtedNotes.sort().toString());
         if (inputtedNotes.sort().toString() == chordsArray[currentIndex].noteArray.sort().toString()) {
             console.log("CORRECT");
             return true;
@@ -342,10 +342,10 @@ const pianoGame = (function runPianoGame() {
     generate4RandomChords();
     renderChords();
 
-    window.onload  = () => {
+    window.onload = () => {
         //Get score from local storage
         const oldScoreObj = JSON.parse(localStorage.getItem('scoreObj'));
-        if(oldScoreObj.session_score){
+        if (oldScoreObj.session_score) {
             scoreObj.session_score = oldScoreObj.session_score; //Replace current score with saved score
         }
         console.log(scoreObj);
