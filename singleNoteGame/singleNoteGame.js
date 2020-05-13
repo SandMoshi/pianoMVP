@@ -15,6 +15,7 @@ const pianoGame = (function runPianoGame() {
     var renderer;
     var context;
     var stave;
+    var currentNote;
     //If wanting to use other scales, make this string parameter a global variable
     chooseScale("C Major Scale");
     navigator.requestMIDIAccess()
@@ -79,6 +80,8 @@ const pianoGame = (function runPianoGame() {
 
     });
 
+
+
     function addNoteToWebsite(note) {
         var currentText = document.getElementById("notesList").innerText;
 
@@ -100,8 +103,10 @@ const pianoGame = (function runPianoGame() {
         note = note.charAt(0) + "/" + note.charAt(1);
         inputtedNotes.push(note);
         //Check if we match the chord
-        if (inputMatchesChord()) {
-            document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
+        console.log("NOTE[0] = " + note[0]);
+        console.log("currentNote[0] = " + currentNote[0]);
+        if (note[0] == currentNote[0]) {
+            //document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
             //Determine if we finished all the notes)
@@ -276,11 +281,13 @@ const pianoGame = (function runPianoGame() {
         VF = Vex.Flow;
         div = document.getElementById('mainStaff');
         renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-        renderer.resize(500, 100);
+        renderer.resize(200, 200);
+
+        stave = new VF.Stave(0, 0, 200);
         context = renderer.getContext();
-        stave = new VF.Stave(0, 0, 500);
+        context.scale(2, 2);
         // Creates a stave at position 10, 40 of width 400 on the canvas.
-        stave.addClef("treble").addTimeSignature("4/4");
+        stave.addClef("treble");
         stave.setContext(context).draw();
     }
 
@@ -291,31 +298,27 @@ const pianoGame = (function runPianoGame() {
             context.clear();
             stave.setContext(context).draw(); //redraw Stave
         }
-        var voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
+
         //Voice needs enough notes to fill the amount of beats
         //The duration of each note needs to add up to the number of beats
+        var testNote = scale[Math.floor(Math.random() * scale.length)];
+        while (testNote == currentNote) {
+            testNote = scale[Math.floor(Math.random() * scale.length)];
+        }
+        currentNote = scale[Math.floor(Math.random() * scale.length)];
+        var notes = [
+            new VF.StaveNote({ keys: [currentNote], duration: "q" }),
+        ];
 
-        var chords = chordsArray.map(chordObject => {
-            return {
-                clef: 'treble',
-                keys: chordObject.noteArray.sort(compareNotes),
-                duration: 'q'
-            }
-        });
-
-        var stave_notes = chords.map(function (chord) { return new VF.StaveNote(chord); });
         //Example code below to set code to green
         //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
         //stave_notes[0]
         //stave_notes[1]
         //index < currentChordIndex
         //stave_notes[0].setStyle({ fillStyle: 'green', strokeStyle: 'green' });
-        stave_notes.forEach((stave_note, index) => { stave_note.setStyle({ fillStyle: chordsArray[index].color, strokeStyle: chordsArray[index].color }) });
-
-        voice.addTickables(stave_notes);
-        var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 500);
-
-
+        var voice = new VF.Voice({ num_beats: 1, beat_value: 4 });
+        voice.addTickables(notes);
+        var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 50);
         voice.draw(context, stave);
     }
     initialRender();
