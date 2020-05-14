@@ -16,6 +16,24 @@ const pianoGame = (function runPianoGame() {
     var context;
     var stave;
     var currentNote;
+
+    const scoreObj = {
+        score_DOM: document.getElementsByClassName('score')[1],
+        session_score: 0,
+        increment: (number) => {
+            scoreObj.session_score += number;
+            scoreObj.score_DOM.innerText = scoreObj.session_score;
+            //Save to local storage
+            localStorage.setItem('scoreObj', JSON.stringify(scoreObj));
+        },
+        resetScore: () => {
+            //Reset the session and stored score
+            scoreObj.session_score = 0;
+            scoreObj.score_DOM.innerText = scoreObj.session_score;
+            localStorage.setItem('scoreObj', JSON.stringify(scoreObj));
+
+        }
+    }
     //If wanting to use other scales, make this string parameter a global variable
     chooseScale("C Major Scale");
     navigator.requestMIDIAccess()
@@ -91,8 +109,8 @@ const pianoGame = (function runPianoGame() {
         note = note.charAt(0) + "/" + note.charAt(1);
         currentText += " " + note;
 
-        document.getElementById("notesList").innerText = currentText;
-        document.getElementById("correctResponse").innerText = "";
+        //document.getElementById("notesList").innerText = currentText;
+        //document.getElementById("correctResponse").innerText = "";
 
         //document.getElementById("notesList").innerText = currentText;
     }
@@ -109,6 +127,7 @@ const pianoGame = (function runPianoGame() {
             //document.getElementById("correctResponse").innerText = "Correct, move to the next chord";
             chordsArray[currentIndex].color = "green";
             currentIndex += 1;
+            scoreObj.increment(1);
             //Determine if we finished all the notes)
             if (currentIndex >= chordsArray.length) {
                 currentIndex = 0;

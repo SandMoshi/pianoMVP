@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../pianoStyle.css">
+    <link rel="stylesheet" type="text/css" href="extraPianoStyle.css">
     <script src="../webmidi.min.js"></script>
     <script src="../vexflow-min.js"></script>
 </head>
@@ -49,7 +50,12 @@
                             </div>
                         </div>
                     </div>
-                    <div id="mainStaff"></div>
+                    <div id="mainStaffOuter">
+                        <div id="mainStaff">
+
+                        </div>
+                        <h5 id="currentScoreText">Current Score: <span class="score">0</span></h5>
+                    </div>
                     <h2 id="correctResponse"></h2>
                 </div>
             </div>
