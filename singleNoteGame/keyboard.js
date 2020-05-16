@@ -33,6 +33,14 @@ function startKeyboard() {
         // new key('', '', 'white', false, '', 12),  // <-- this is a empty key
     ]
 
+    
+    //Determine the height/width of the keys
+    const keyboardWidth = keyboardDOM.offsetWidth;
+    const whiteKeyWidth = Math.floor(keyboardWidth/7);
+    const blackKeyWidth = Math.max(Math.floor(keyboardWidth/7*0.6), 30);
+    const KeyHeightToWidth = 4.24;  //Height is 4.24 times the width
+
+
     keys.forEach((key, index) => {
         //Create DOM key for each one
         const domKey = document.createElement('div');
@@ -41,8 +49,11 @@ function startKeyboard() {
         domKey.dataset.keycode = key.keyCode;
         domKey.dataset.realnote = key.realNote;
         domKey.id = key.keyCode;
-        domKey.style = (key.color === 'white') ? `left: calc(50px * ${key.index}); z-index: 0;` : `left: calc(35px + 50px * ${key.index}); z-index: 1;`;
         keyboardDOM.appendChild(domKey);
+
+        domKey.style = (key.color === 'white') ? `box-shadow: 0px ${0.02*whiteKeyWidth*KeyHeightToWidth}px ${0.02*whiteKeyWidth*KeyHeightToWidth/5}px rgba(32,32,32,0.2); height:${KeyHeightToWidth * whiteKeyWidth}px; width:${whiteKeyWidth}px; left: calc(${whiteKeyWidth}px * ${key.index}); z-index: 0;` : `height:${KeyHeightToWidth * blackKeyWidth}px; width:${blackKeyWidth}px;  left: calc(${whiteKeyWidth}px - ${blackKeyWidth * 0.5}px + ${whiteKeyWidth}px * ${key.index}); z-index: 1;`;
+
+        
 
         if (key.keyChar) {
             const instruction = document.createElement('span');

@@ -10,7 +10,7 @@
     margin-right: 20px;
 }
 #keyboard{
-    width: calc(7*50px) !important;
+    width: 90%;
 }
 
 .keyboard__key{
@@ -22,8 +22,7 @@
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    border-radius: 0px 0px 4px 4px;
-    box-shadow: 0px 5px 1px rgba(32,32,32,0.2);
+    border-radius: 0px 0px 2% 2%;
     margin: 0 auto;
 }
 
@@ -112,3 +111,10 @@
     width: 100%;
 }
 
+@media (max-width: 1000px){
+
+}
+
+@media (max-width: 400px){
+
+}
